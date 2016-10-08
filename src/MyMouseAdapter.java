@@ -94,7 +94,7 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Released the mouse button on a different cell where it was pressed
 						//Do nothing
 					} else {
-							//On the grid other than on the left column and on the top row:
+							//On the grid; either uncovered empty square or hit mine
 							Color newColor = null;
 							switch (generator.nextInt(5)) {
 							case 0:
