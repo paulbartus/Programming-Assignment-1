@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.util.Random;
-
 import javax.swing.JPanel;
 
 public class MyPanel extends JPanel {
@@ -12,11 +11,13 @@ public class MyPanel extends JPanel {
 	private static final int INNER_CELL_SIZE = 29;
 	private static final int TOTAL_COLUMNS = 9;
 	private static final int TOTAL_ROWS = 9;   
+	private Random generator = new Random();
 	public int x = -1;
 	public int y = -1;
 	public int mouseDownGridX = 0;
 	public int mouseDownGridY = 0;
 	public Color[][] colorArray = new Color[TOTAL_COLUMNS][TOTAL_ROWS];
+	public Boolean[][] minesArray = new Boolean[TOTAL_COLUMNS][TOTAL_ROWS]; 
 	public MyPanel() {   //This is the constructor... this code runs first to initialize
 		if (INNER_CELL_SIZE + (new Random()).nextInt(1) < 1) {	//Use of "random" to prevent unwanted Eclipse warning
 			throw new RuntimeException("INNER_CELL_SIZE must be positive!");
@@ -67,7 +68,34 @@ public class MyPanel extends JPanel {
 				g.fillRect(x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 1, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 1, INNER_CELL_SIZE, INNER_CELL_SIZE);
 				}
 			}
+	}
+	//Method that sets mines in 10 random squares
+	public void setMines() {
+		for (int i = 0; i < TOTAL_COLUMNS; i++) {
+			for (int k = 0; k < TOTAL_ROWS; k++) {
+				minesArray[i][k] = false;
+			}
 		}
+		int xBombCoordinate;
+		int yBombCoordinate;
+		for(int i = 0; i < 10; i++) {
+			xBombCoordinate = generator.nextInt(TOTAL_COLUMNS);
+			yBombCoordinate = generator.nextInt(TOTAL_ROWS);
+			minesArray[xBombCoordinate][yBombCoordinate] = true;
+		}
+	}
+	//Method that's called when the player loses the game
+	public void lostGame() {
+		System.out.println("Hit a mine; lost the game!");
+		for (int i = 0; i < TOTAL_COLUMNS; i++) {
+			for (int k = 0; k < TOTAL_ROWS; k++) {
+				if(minesArray[i][k]) {
+					colorArray[i][k] = Color.BLACK;
+					repaint();
+				}
+			}
+		}
+	}
 	public int getGridX(int x, int y) {
 		Insets myInsets = getInsets();
 		int x1 = myInsets.left;

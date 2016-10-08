@@ -3,12 +3,9 @@ import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Random;
-
 import javax.swing.JFrame;
 
 public class MyMouseAdapter extends MouseAdapter {
-	private Random generator = new Random();
 	public void mousePressed(MouseEvent e) {
 		switch (e.getButton()) {
 		case 1:		//Left mouse button
@@ -71,7 +68,7 @@ public class MyMouseAdapter extends MouseAdapter {
 				}
 			}
 			JFrame myFrame = (JFrame)c;
-			MyPanel myPanel = (MyPanel) myFrame.getContentPane().getComponent(0);  //Can also loop among components to find MyPanel
+			MyPanel myPanel = (MyPanel) myFrame.getContentPane().getComponent(0);  //Can also loop among components to find myPanel
 			Insets myInsets = myFrame.getInsets();
 			int x1 = myInsets.left;
 			int y1 = myInsets.top;
@@ -95,16 +92,14 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Do nothing
 					} else {
 							//On the grid; either uncovered empty square or hit mine
-							Color newColor = null;
-							switch (generator.nextInt(5)) {
-							case 0:
-								newColor = Color.YELLOW;
+							if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.RED)) {
+								break; //Don't uncover square if it's flagged
+								}
+							if(myPanel.minesArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]) { //Hit mine
+								myPanel.lostGame();
 								break;
-							case 1:
-								newColor = Color.MAGENTA;
-								break;
-							}
-							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = newColor;
+								}
+							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
 							myPanel.repaint();
 						}
 					}
@@ -120,7 +115,7 @@ public class MyMouseAdapter extends MouseAdapter {
 				}
 			}
 			myFrame = (JFrame)c;
-			myPanel = (MyPanel) myFrame.getContentPane().getComponent(0);  //Can also loop among components to find MyPanel
+			myPanel = (MyPanel) myFrame.getContentPane().getComponent(0);  //Can also loop among components to find myPanel
 			myInsets = myFrame.getInsets();
 			x1 = myInsets.left;
 			y1 = myInsets.top;
@@ -144,6 +139,15 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Do nothing
 					} else {
 							//Player flagged square
+							if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.GRAY)) {
+								break; //Can't flag uncovered square
+								}
+							//Remove existing flag
+							if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.RED)) {
+								myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.WHITE; 
+								myPanel.repaint();
+								break;
+								}
 							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.RED;
 							myPanel.repaint();
 						}
