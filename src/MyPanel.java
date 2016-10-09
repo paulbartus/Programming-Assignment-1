@@ -2,6 +2,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.util.Random;
+
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class MyPanel extends JPanel {
@@ -18,6 +20,7 @@ public class MyPanel extends JPanel {
 	public int mouseDownGridY = 0;
 	public Color[][] colorArray = new Color[TOTAL_COLUMNS][TOTAL_ROWS];
 	public Boolean[][] minesArray = new Boolean[TOTAL_COLUMNS][TOTAL_ROWS]; 
+	public int[][] numberOfMines = new int[TOTAL_COLUMNS][TOTAL_ROWS];
 	public MyPanel() {   //This is the constructor... this code runs first to initialize
 		if (INNER_CELL_SIZE + (new Random()).nextInt(1) < 1) {	//Use of "random" to prevent unwanted Eclipse warning
 			throw new RuntimeException("INNER_CELL_SIZE must be positive!");
@@ -59,15 +62,15 @@ public class MyPanel extends JPanel {
 		for (int x = 0; x <= TOTAL_COLUMNS; x++) {
 			g.drawLine(x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)), y1 + GRID_Y, x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)), y1 + GRID_Y + ((INNER_CELL_SIZE + 1) * (TOTAL_ROWS)));
 		}
-		
+
 		//Paint cell colors
 		for (int x = 0; x < TOTAL_COLUMNS; x++) {
 			for (int y = 0; y < TOTAL_ROWS; y++) {
 				Color c = colorArray[x][y];
 				g.setColor(c);
 				g.fillRect(x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 1, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 1, INNER_CELL_SIZE, INNER_CELL_SIZE);
-				}
 			}
+		}
 	}
 	//Method that sets mines in 10 random squares
 	public void setMines() {
@@ -82,11 +85,73 @@ public class MyPanel extends JPanel {
 			xBombCoordinate = generator.nextInt(TOTAL_COLUMNS);
 			yBombCoordinate = generator.nextInt(TOTAL_ROWS);
 			minesArray[xBombCoordinate][yBombCoordinate] = true;
+			numberOfMines[xBombCoordinate][yBombCoordinate] = -1; //-1 indicates there is a bomb on that cell
+
 		}
 	}
+
+
+	public void nearMines(){			//Sets the number of mines around every cell to that cell 	
+		for (int i = 0; i <= TOTAL_COLUMNS; i++) {
+			for (int j = 0; j <= TOTAL_ROWS; j++) {
+				numberOfMines[i][j] = 0;
+				if (!minesArray[i][j]){      
+					if (j >= 1 && minesArray[i][j-1]) 
+						numberOfMines[i][j] =+ 1;
+					if (j <= TOTAL_ROWS-2 && minesArray[i][j+1]) 
+						numberOfMines[i][j] =+ 1;
+					if (i >= 1 && minesArray[i-1][j]) 
+						numberOfMines[i][j] =+ 1;
+					if (i <=  TOTAL_COLUMNS-2 && minesArray[i+1][j]) 
+						numberOfMines[i][j] =+ 1;
+					if (i >= 1 && j >= 1 && minesArray[i-1][j-1]) 
+						numberOfMines[i][j] =+ 1;
+					if (i <= TOTAL_COLUMNS-2 && j >= 1 && minesArray[i+1][j-1]) 
+						numberOfMines[i][j] =+ 1;
+					if (i <= TOTAL_COLUMNS-2 && j <= TOTAL_ROWS-2 && minesArray[i+1][j+1]) 
+						numberOfMines[i][j] =+ 1;
+					if (i >= 1 && j <= TOTAL_ROWS-2 && minesArray[i-1][j+1]) 
+						numberOfMines[i][j] =+ 1;
+				}	
+			}
+		}
+	}
+
+	public void paintAdjacentCells(int i, int j){		//Checks what cells around the clicked cell are empty (no mine) and paints them
+		i = mouseDownGridX;
+		j = mouseDownGridY;
+		if (!minesArray[i][j]) {
+			if ( j >= 1 && (numberOfMines[i][j-1] == 0)){	
+				colorArray[i][j-1] = Color.GRAY;
+			}
+			if (j <= TOTAL_ROWS-2 && (numberOfMines[i][j+1] == 0)) {
+				colorArray[i][j+1] = Color.GRAY;
+			}
+			if (i >= 1 && (numberOfMines[i-1][j] == 0)) {
+				colorArray[i-1][j] = Color.GRAY;
+			}
+			if (i <=  TOTAL_COLUMNS-2 && (numberOfMines[i+1][j] == 0)) {
+				colorArray[i+1][j] = Color.GRAY;
+			}
+			if (i >= 1 && j >= 1 && (numberOfMines[i-1][j-1] == 0)) { 
+				colorArray[i-1][j-1] = Color.GRAY;
+			}
+			if (i <= TOTAL_COLUMNS-2 && j >= 1 && (numberOfMines[i+1][j-1] == 0)) {
+				colorArray[i+1][j-1] = Color.GRAY;
+			}
+			if (i <= TOTAL_COLUMNS-2 && j <= TOTAL_ROWS-2 && (numberOfMines[i+1][j+1] == 0)) {
+				colorArray[i+1][j+1] = Color.GRAY;
+			}
+			if (i >= 1 && j <= TOTAL_ROWS-2 && (numberOfMines[i-1][j+1] == 0)) {
+				colorArray[i-1][j+1] = Color.GRAY;
+			}
+		}
+
+	}
+
+
 	//Method that's called when the player loses the game
 	public void lostGame() {
-		System.out.println("Hit a mine; lost the game!");
 		for (int i = 0; i < TOTAL_COLUMNS; i++) {
 			for (int k = 0; k < TOTAL_ROWS; k++) {
 				if(minesArray[i][k]) {
@@ -95,6 +160,7 @@ public class MyPanel extends JPanel {
 				}
 			}
 		}
+		JOptionPane.showMessageDialog(null, "Hit a mine; lost the game!");
 	}
 	public int getGridX(int x, int y) {
 		Insets myInsets = getInsets();
