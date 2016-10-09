@@ -91,19 +91,24 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Released the mouse button on a different cell where it was pressed
 						//Do nothing
 					} else {
-							//On the grid; either uncovered empty square or hit mine
-							if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.RED)) {
-								break; //Don't uncover square if it's flagged
-								}
-							if(myPanel.minesArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]) { //Hit mine
-								myPanel.lostGame();
-								break;
-								}
-							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-							myPanel.repaint();
+						//On the grid; either uncovered empty square or hit mine
+						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.RED)) {
+							break; //Don't uncover square if it's flagged
 						}
+						if(myPanel.minesArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]) { //Hit mine
+							myPanel.lostGame();
+							break;
+						}
+
+
+						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
+						myPanel.paintAdjacentCells(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
+						myPanel.repaint();
+
+
 					}
 				}
+			}
 			myPanel.repaint();
 			break;
 		case 3:		//Right mouse button
@@ -138,21 +143,21 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Released the mouse button on a different cell where it was pressed
 						//Do nothing
 					} else {
-							//Player flagged square
-							if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.GRAY)) {
-								break; //Can't flag uncovered square
-								}
-							//Remove existing flag
-							if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.RED)) {
-								myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.WHITE; 
-								myPanel.repaint();
-								break;
-								}
-							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.RED;
-							myPanel.repaint();
+						//Player flagged square
+						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.GRAY)) {
+							break; //Can't flag uncovered square
 						}
+						//Remove existing flag
+						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.RED)) {
+							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.WHITE; 
+							myPanel.repaint();
+							break;
+						}
+						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.RED;
+						myPanel.repaint();
 					}
 				}
+			}
 			myPanel.repaint();
 			break;
 		default:    //Some other button (2 = Middle mouse button, etc.)
