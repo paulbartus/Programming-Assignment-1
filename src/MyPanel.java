@@ -21,7 +21,7 @@ public class MyPanel extends JPanel {
 	
 	public Color[][] colorArray = new Color[TOTAL_COLUMNS][TOTAL_ROWS];
 	public Boolean[][] minesArray = new Boolean[TOTAL_COLUMNS][TOTAL_ROWS]; //Array that stores whether a cell contains a mine
-	public int[][] numberOfMines = new int[TOTAL_COLUMNS][TOTAL_ROWS]; //Array that assigns to each cell the number of mines adjacent to it
+	public int[][] numberOfAdjacentMines = new int[TOTAL_COLUMNS][TOTAL_ROWS]; //Array that assigns to each cell the number of mines adjacent to it
 	public Boolean[][] revealedCells = new Boolean[TOTAL_COLUMNS][TOTAL_ROWS]; //Array that stores whether a cell has been revealed
 	
 	public MyPanel() {   //This is the constructor... this code runs first to initialize
@@ -75,10 +75,12 @@ public class MyPanel extends JPanel {
 	}
 	//Method that sets mines in 10 random squares
 	public void setMines() {
+		//Initialization of arrays
 		for (int i = 0; i < TOTAL_COLUMNS; i++) {
 			for (int k = 0; k < TOTAL_ROWS; k++) {
-				minesArray[i][k] = false; //Initialize array
+				minesArray[i][k] = false; 
 				revealedCells[i][k] = false;
+				numberOfAdjacentMines[i][k] = 0;
 			}
 		}
 	int xBombCoordinate;
@@ -90,10 +92,10 @@ public class MyPanel extends JPanel {
 		if(!minesArray[xBombCoordinate][yBombCoordinate]) {
 			setMines++;
 			minesArray[xBombCoordinate][yBombCoordinate] = true;
-			numberOfMines[xBombCoordinate][yBombCoordinate] = -1; //-1 indicates that there is a bomb in that cell
-			//revealedCells[xBombCoordinate][yBombCoordinate] = true; //Cells with mines count as revealed cells
+			numberOfAdjacentMines[xBombCoordinate][yBombCoordinate] = -1; //-1 indicates that there is a bomb in that cell
 			}
 		}
+	nearMines();
 	for (int i = 0; i < TOTAL_COLUMNS; i++) { //PAINTS ALL MINES; USE THIS BLOCK OF CODE FOR DEBUGGING
 		for (int k = 0; k < TOTAL_ROWS; k++) {
 			if(minesArray[i][k]) {
@@ -104,27 +106,26 @@ public class MyPanel extends JPanel {
 	}
 	}
 	public void nearMines()	{ //Sets the number of mines around every cell
-		for (int i = 0; i < TOTAL_COLUMNS; i++) { //Initialize numberOfMines array
+		for (int i = 0; i < TOTAL_COLUMNS; i++) {
 			for (int j = 0; j < TOTAL_ROWS; j++) {
-				numberOfMines[i][j] = 0;
-				if (!minesArray[i][j]){      
-					if (j >= 1 && minesArray[i][j-1]) 
-						numberOfMines[i][j] =+ 1;
-					if (j <= TOTAL_ROWS-2 && minesArray[i][j+1]) 
-						numberOfMines[i][j] =+ 1;
+				if (!minesArray[i][j]){ //If the cell does not contain a mine, assign the number of mines adjacent to it
+					if (j >= 1 && minesArray[i][j-1] == true) 
+						numberOfAdjacentMines[i][j] =+ 1;
+					if (j <= TOTAL_ROWS-2 && minesArray[i][j+1] == true) 
+						numberOfAdjacentMines[i][j] =+ 1;
 					if (i >= 1 && minesArray[i-1][j]) 
-						numberOfMines[i][j] =+ 1;
-					if (i <=  TOTAL_COLUMNS-2 && minesArray[i+1][j]) 
-						numberOfMines[i][j] =+ 1;
+						numberOfAdjacentMines[i][j] =+ 1;
+					if (i <=  TOTAL_COLUMNS-2 && minesArray[i+1][j] == true) 
+						numberOfAdjacentMines[i][j] =+ 1;
 					if (i >= 1 && j >= 1 && minesArray[i-1][j-1]) 
-						numberOfMines[i][j] =+ 1;
-					if (i <= TOTAL_COLUMNS-2 && j >= 1 && minesArray[i+1][j-1]) 
-						numberOfMines[i][j] =+ 1;
-					if (i <= TOTAL_COLUMNS-2 && j <= TOTAL_ROWS-2 && minesArray[i+1][j+1]) 
-						numberOfMines[i][j] =+ 1;
-					if (i >= 1 && j <= TOTAL_ROWS-2 && minesArray[i-1][j+1]) 
-						numberOfMines[i][j] =+ 1;
-					System.out.println(numberOfMines[i][j]);
+						numberOfAdjacentMines[i][j] =+ 1;
+					if (i <= TOTAL_COLUMNS-2 && j >= 1 && minesArray[i+1][j-1] == true) 
+						numberOfAdjacentMines[i][j] =+ 1;
+					if (i <= TOTAL_COLUMNS-2 && j <= TOTAL_ROWS-2 && minesArray[i+1][j+1] == true) 
+						numberOfAdjacentMines[i][j] =+ 1;
+					if (i >= 1 && j <= TOTAL_ROWS-2 && minesArray[i-1][j+1] == true) 
+						numberOfAdjacentMines[i][j] =+ 1;
+					System.out.println(numberOfAdjacentMines[i][j]);
 				}	
 			}
 		}
@@ -133,49 +134,49 @@ public class MyPanel extends JPanel {
 		i = mouseDownGridX;
 		j = mouseDownGridY;
 		if (!minesArray[i][j]) {
-			if (j >= 1 && (numberOfMines[i][j-1] == 0)){	
+			if (j >= 1 && (numberOfAdjacentMines[i][j-1] == 0)){	
 				if (!minesArray[i][j-1]) { 
 				colorArray[i][j-1] = Color.GRAY;
 				revealedCells[i][j-1]  = true;
 				}
 			}
-			if (j <= TOTAL_ROWS-2 && (numberOfMines[i][j+1] == 0)) {
+			if (j <= TOTAL_ROWS-2 && (numberOfAdjacentMines[i][j+1] == 0)) {
 				if (!minesArray[i][j+1]) { 
 				colorArray[i][j+1] = Color.GRAY;
 				revealedCells[i][j+1]  = true;
 				}
 			}
-			if (i >= 1 && (numberOfMines[i-1][j] == 0)) {
+			if (i >= 1 && (numberOfAdjacentMines[i-1][j] == 0)) {
 				if (!minesArray[i-1][j]) { 
 				colorArray[i-1][j] = Color.GRAY;
 				revealedCells[i-1][j]  = true;
 				}
 			}
-			if (i <=  TOTAL_COLUMNS-2 && (numberOfMines[i+1][j] == 0)) {
+			if (i <=  TOTAL_COLUMNS-2 && (numberOfAdjacentMines[i+1][j] == 0)) {
 				if (!minesArray[i+1][j]) { 
 				colorArray[i+1][j] = Color.GRAY;
 				revealedCells[i+1][j]  = true;
 				}
 			}
-			if (i >= 1 && j >= 1 && (numberOfMines[i-1][j-1] == 0)) { 
+			if (i >= 1 && j >= 1 && (numberOfAdjacentMines[i-1][j-1] == 0)) { 
 				if (!minesArray[i-1][j-1]) { 
 				colorArray[i-1][j-1] = Color.GRAY;
 				revealedCells[i-1][j-1]  = true;
 				}
 			}
-			if (i <= TOTAL_COLUMNS-2 && j >= 1 && (numberOfMines[i+1][j-1] == 0)) {
+			if (i <= TOTAL_COLUMNS-2 && j >= 1 && (numberOfAdjacentMines[i+1][j-1] == 0)) {
 				if (!minesArray[i+1][j-1]) { 
 				colorArray[i+1][j-1] = Color.GRAY;
 				revealedCells[i+1][j-1]  = true;
 				}
 			}
-			if (i <= TOTAL_COLUMNS-2 && j <= TOTAL_ROWS-2 && (numberOfMines[i+1][j+1] == 0)) {
+			if (i <= TOTAL_COLUMNS-2 && j <= TOTAL_ROWS-2 && (numberOfAdjacentMines[i+1][j+1] == 0)) {
 				if (!minesArray[i+1][j+1]) { 
 				colorArray[i+1][j+1] = Color.GRAY;
 				revealedCells[i+1][j+1]  = true;
 				}
 			}
-			if (i >= 1 && j <= TOTAL_ROWS-2 && (numberOfMines[i-1][j+1] == 0)) {
+			if (i >= 1 && j <= TOTAL_ROWS-2 && (numberOfAdjacentMines[i-1][j+1] == 0)) {
 				if (!minesArray[i-1][j+1]) { 
 				colorArray[i-1][j+1] = Color.GRAY;
 				revealedCells[i-1][j+1]  = true;

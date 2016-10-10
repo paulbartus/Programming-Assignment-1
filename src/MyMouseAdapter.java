@@ -99,7 +99,7 @@ public class MyMouseAdapter extends MouseAdapter {
 							myPanel.lostGame();
 							break;
 						}
-						if(myPanel.numberOfMines[myPanel.mouseDownGridX][myPanel.mouseDownGridY] != -1) {
+						if(myPanel.numberOfAdjacentMines[myPanel.mouseDownGridX][myPanel.mouseDownGridY] != -1) {
 							myPanel.nearMines(); //Calculate the number of mines adjacent to the cell when the cell is uncovered
 							myPanel.repaint();
 						}
