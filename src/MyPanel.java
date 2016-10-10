@@ -92,31 +92,32 @@ public class MyPanel extends JPanel {
 
 
 	public void nearMines(){			//Sets the number of mines around every cell to that cell 
-		
+
 		for (int i = 0; i < TOTAL_COLUMNS; i++) {
 			for (int j = 0; j < TOTAL_ROWS; j++) {
-				if (numberOfMines[i][j] != -1){  
+				if (numberOfMines[i][j] != -1){ 
 					numberOfMines[i][j] = 0;
-					if (j >= 1 && minesArray[i][j-1]) 
-						numberOfMines[i][j] =+ 1;
-					if (j <= TOTAL_ROWS-2 && minesArray[i][j+1]) 
-						numberOfMines[i][j] =+ 1;
-					if (i >= 1 && minesArray[i-1][j]) 
-						numberOfMines[i][j] =+ 1;
-					if (i <=  TOTAL_COLUMNS-2 && minesArray[i+1][j]) 
-						numberOfMines[i][j] =+ 1;
-					if (i >= 1 && j >= 1 && minesArray[i-1][j-1]) 
-						numberOfMines[i][j] =+ 1;
-					if (i <= TOTAL_COLUMNS-2 && j >= 1 && minesArray[i+1][j-1]) 
-						numberOfMines[i][j] =+ 1;
-					if (i <= TOTAL_COLUMNS-2 && j <= TOTAL_ROWS-2 && minesArray[i+1][j+1]) 
-						numberOfMines[i][j] =+ 1;
-					if (i >= 1 && j <= TOTAL_ROWS-2 && minesArray[i-1][j+1]) 
-						numberOfMines[i][j] =+ 1;
+					if (j >= 1 && numberOfMines[i][j-1] == -1) 
+						numberOfMines[i][j]++;
+					if (j <= TOTAL_ROWS-2 && numberOfMines[i][j+1] == -1) 
+						numberOfMines[i][j]++;
+					if (i >= 1 && numberOfMines[i-1][j] == -1) 
+						numberOfMines[i][j]++;
+					if (i <=  TOTAL_COLUMNS-2 && numberOfMines[i+1][j] == -1) 
+						numberOfMines[i][j]++;
+					if (i >= 1 && j >= 1 && numberOfMines[i-1][j-1]  == -1) 
+						numberOfMines[i][j]++;
+					if (i <= TOTAL_COLUMNS-2 && j >= 1 && numberOfMines[i+1][j-1] == -1) 
+						numberOfMines[i][j]++;
+					if (i <= TOTAL_COLUMNS-2 && j <= TOTAL_ROWS-2 && numberOfMines[i+1][j+1] == -1) 
+						numberOfMines[i][j]++;
+					if (i >= 1 && j <= TOTAL_ROWS-2 && numberOfMines[i-1][j+1] == -1) 
+						numberOfMines[i][j]++;
 				}
+				System.out.println(numberOfMines[i][j]);
 			}
 		}
-		
+
 	}
 
 	public void paintAdjacentCells(int i, int j){		//Checks what cells around the clicked cell are empty (no mine) and paints them
@@ -150,7 +151,7 @@ public class MyPanel extends JPanel {
 		}
 
 	}
-	
+
 
 
 	//Method that's called when the player loses the game
@@ -209,9 +210,9 @@ public class MyPanel extends JPanel {
 		}
 		return y;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 }

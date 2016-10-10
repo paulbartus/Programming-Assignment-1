@@ -57,6 +57,9 @@ public class MyMouseAdapter extends MouseAdapter {
 			break;
 		}
 	}
+	
+	
+	
 	public void mouseReleased(MouseEvent e) {
 		switch (e.getButton()) {
 		case 1:		//Left mouse button
@@ -101,7 +104,7 @@ public class MyMouseAdapter extends MouseAdapter {
 						}
 						
 						myPanel.nearMines();
-
+						
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;						
 						myPanel.paintAdjacentCells(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
 						
