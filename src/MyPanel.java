@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.util.Random;
-
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -20,7 +19,7 @@ public class MyPanel extends JPanel {
 	public int mouseDownGridY = 0;
 	public Color[][] colorArray = new Color[TOTAL_COLUMNS][TOTAL_ROWS];
 	public Boolean[][] minesArray = new Boolean[TOTAL_COLUMNS][TOTAL_ROWS]; 
-	public int[][] numberOfMines = new int[TOTAL_COLUMNS][TOTAL_ROWS];
+	public static int[][] numberOfMines = new int[TOTAL_COLUMNS][TOTAL_ROWS];
 	public MyPanel() {   //This is the constructor... this code runs first to initialize
 		if (INNER_CELL_SIZE + (new Random()).nextInt(1) < 1) {	//Use of "random" to prevent unwanted Eclipse warning
 			throw new RuntimeException("INNER_CELL_SIZE must be positive!");
@@ -91,11 +90,13 @@ public class MyPanel extends JPanel {
 	}
 
 
-	public void nearMines(){			//Sets the number of mines around every cell to that cell 	
-		for (int i = 0; i <= TOTAL_COLUMNS; i++) {
-			for (int j = 0; j <= TOTAL_ROWS; j++) {
-				numberOfMines[i][j] = 0;
-				if (!minesArray[i][j]){      
+
+	public void nearMines(){			//Sets the number of mines around every cell to that cell 
+		
+		for (int i = 0; i < TOTAL_COLUMNS; i++) {
+			for (int j = 0; j < TOTAL_ROWS; j++) {
+				if (numberOfMines[i][j] != -1){  
+					numberOfMines[i][j] = 0;
 					if (j >= 1 && minesArray[i][j-1]) 
 						numberOfMines[i][j] =+ 1;
 					if (j <= TOTAL_ROWS-2 && minesArray[i][j+1]) 
@@ -112,17 +113,18 @@ public class MyPanel extends JPanel {
 						numberOfMines[i][j] =+ 1;
 					if (i >= 1 && j <= TOTAL_ROWS-2 && minesArray[i-1][j+1]) 
 						numberOfMines[i][j] =+ 1;
-				}	
+				}
 			}
 		}
+		
 	}
 
 	public void paintAdjacentCells(int i, int j){		//Checks what cells around the clicked cell are empty (no mine) and paints them
 		i = mouseDownGridX;
 		j = mouseDownGridY;
-		if (!minesArray[i][j]) {
+		if (numberOfMines[i][j] >=0) {
 			if ( j >= 1 && (numberOfMines[i][j-1] == 0)){	
-				colorArray[i][j-1] = Color.GRAY;
+				colorArray[i][j-1] = Color.GRAY;					 			 
 			}
 			if (j <= TOTAL_ROWS-2 && (numberOfMines[i][j+1] == 0)) {
 				colorArray[i][j+1] = Color.GRAY;
@@ -148,6 +150,7 @@ public class MyPanel extends JPanel {
 		}
 
 	}
+	
 
 
 	//Method that's called when the player loses the game
@@ -206,4 +209,9 @@ public class MyPanel extends JPanel {
 		}
 		return y;
 	}
+	
+	
+	
+	
+	
 }
