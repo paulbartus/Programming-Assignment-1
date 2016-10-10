@@ -103,12 +103,11 @@ public class MyMouseAdapter extends MouseAdapter {
 							break;
 						}
 						
-						myPanel.nearMines();
-						
-						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;						
+						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
+						myPanel.revealedCells[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = true;
 						myPanel.paintAdjacentCells(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
-						
 						myPanel.repaint();
+						myPanel.wonGameCondition(); //Check whether the uncovering of this cell satisfies the won-game condition
 
 
 					}

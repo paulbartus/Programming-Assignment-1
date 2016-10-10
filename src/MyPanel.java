@@ -12,14 +12,18 @@ public class MyPanel extends JPanel {
 	private static final int INNER_CELL_SIZE = 29;
 	private static final int TOTAL_COLUMNS = 9;
 	private static final int TOTAL_ROWS = 9;   
+	private static final int TOTAL_MINES = 10;
 	private Random generator = new Random();
 	public int x = -1;
 	public int y = -1;
 	public int mouseDownGridX = 0;
 	public int mouseDownGridY = 0;
+
 	public Color[][] colorArray = new Color[TOTAL_COLUMNS][TOTAL_ROWS];
-	public Boolean[][] minesArray = new Boolean[TOTAL_COLUMNS][TOTAL_ROWS]; 
-	public static int[][] numberOfMines = new int[TOTAL_COLUMNS][TOTAL_ROWS];
+	public Boolean[][] minesArray = new Boolean[TOTAL_COLUMNS][TOTAL_ROWS]; //Array that stores whether a cell contains a mine
+	public int[][] numberOfMines = new int[TOTAL_COLUMNS][TOTAL_ROWS]; //Array that assigns to each cell the number of mines adjacent to it
+	public Boolean[][] revealedCells = new Boolean[TOTAL_COLUMNS][TOTAL_ROWS]; //Array that stores whether a cell has been revealed
+
 	public MyPanel() {   //This is the constructor... this code runs first to initialize
 		if (INNER_CELL_SIZE + (new Random()).nextInt(1) < 1) {	//Use of "random" to prevent unwanted Eclipse warning
 			throw new RuntimeException("INNER_CELL_SIZE must be positive!");
@@ -73,29 +77,43 @@ public class MyPanel extends JPanel {
 	}
 	//Method that sets mines in 10 random squares
 	public void setMines() {
+		//Initialization of arrays
 		for (int i = 0; i < TOTAL_COLUMNS; i++) {
 			for (int k = 0; k < TOTAL_ROWS; k++) {
-				minesArray[i][k] = false;
+				minesArray[i][k] = false; 
+				revealedCells[i][k] = false;
 			}
 		}
 		int xBombCoordinate;
 		int yBombCoordinate;
-		for(int i = 0; i < 10; i++) {
+		int setMines = 0;
+		while(setMines < TOTAL_MINES) {
 			xBombCoordinate = generator.nextInt(TOTAL_COLUMNS);
 			yBombCoordinate = generator.nextInt(TOTAL_ROWS);
-			minesArray[xBombCoordinate][yBombCoordinate] = true;
-			numberOfMines[xBombCoordinate][yBombCoordinate] = -1; //-1 indicates there is a bomb on that cell
-
+			if(!minesArray[xBombCoordinate][yBombCoordinate]) {
+				setMines++;
+				minesArray[xBombCoordinate][yBombCoordinate] = true;
+				numberOfMines[xBombCoordinate][yBombCoordinate] = -1; //-1 indicates that there is a bomb in that cell
+			}
 		}
+		nearMines();
+//		for (int i = 0; i < TOTAL_COLUMNS; i++) { //PAINTS ALL MINES; USE THIS BLOCK OF CODE FOR DEBUGGING
+//			for (int k = 0; k < TOTAL_ROWS; k++) {
+//				if(minesArray[i][k]) {
+//					colorArray[i][k] = Color.BLACK;
+//					repaint();
+//				}
+//			}
+//		}
 	}
 
 
 
-	public void nearMines(){			//Sets the number of mines around every cell to that cell 
-
+public void nearMines(){			//Sets the number of mines around every cell to that cell 
+		
 		for (int i = 0; i < TOTAL_COLUMNS; i++) {
 			for (int j = 0; j < TOTAL_ROWS; j++) {
-				if (numberOfMines[i][j] != -1){ 
+				if (numberOfMines[i][j] != -1){  
 					numberOfMines[i][j] = 0;
 					if (j >= 1 && numberOfMines[i][j-1] == -1) 
 						numberOfMines[i][j]++;
@@ -114,11 +132,12 @@ public class MyPanel extends JPanel {
 					if (i >= 1 && j <= TOTAL_ROWS-2 && numberOfMines[i-1][j+1] == -1) 
 						numberOfMines[i][j]++;
 				}
-				System.out.println(numberOfMines[i][j]);
+				System.out.println("row" + j + "column" + i + " " + numberOfMines[i][j]);
 			}
 		}
-
+		
 	}
+
 
 	public void paintAdjacentCells(int i, int j){		//Checks what cells around the clicked cell are empty (no mine) and paints them
 		i = mouseDownGridX;
@@ -166,6 +185,29 @@ public class MyPanel extends JPanel {
 		}
 		JOptionPane.showMessageDialog(null, "Hit a mine; lost the game!");
 	}
+
+	public void wonGameCondition() {
+		int m = 0;
+		for (int i = 0; i < TOTAL_COLUMNS; i++) {
+			for (int j = 0; j < TOTAL_ROWS; j++) {
+				if(!minesArray[i][j] && colorArray[i][j] == Color.GRAY) {
+					m++;
+				}
+//					if(!revealedCells[i][j]) {
+//						break;
+//					}
+//				else {
+//						m++;
+//					}
+//				}
+//			}
+		}
+		}
+		if(m == ((TOTAL_ROWS)*(TOTAL_COLUMNS)) - TOTAL_MINES) {
+			JOptionPane.showMessageDialog(null, "Won the game!");
+		}
+	}
+
 	public int getGridX(int x, int y) {
 		Insets myInsets = getInsets();
 		int x1 = myInsets.left;
