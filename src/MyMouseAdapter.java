@@ -57,6 +57,9 @@ public class MyMouseAdapter extends MouseAdapter {
 			break;
 		}
 	}
+	
+	
+	
 	public void mouseReleased(MouseEvent e) {
 		switch (e.getButton()) {
 		case 1:		//Left mouse button
@@ -91,20 +94,18 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Released the mouse button on a different cell where it was pressed
 						//Do nothing
 					} else {
-						//On the grid; either uncovered empty cell or hit mine
+						//On the grid; either uncovered empty square or hit mine
 						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.RED)) {
 							break; //Don't uncover square if it's flagged
+						}
+						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.GRAY)) {
+							break; //Do nothing if cell is already revealed
 						}
 						if(myPanel.minesArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]) { //Hit mine
 							myPanel.lostGame();
 							break;
-						}
-						if(myPanel.numberOfAdjacentMines[myPanel.mouseDownGridX][myPanel.mouseDownGridY] != -1) {
-							myPanel.nearMines(); //Calculate the number of mines adjacent to the cell when the cell is uncovered
-							myPanel.repaint();
-						}
+						}	
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-						myPanel.revealedCells[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = true;
 						myPanel.paintAdjacentCells(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
 						myPanel.repaint();
 						myPanel.wonGameCondition(); //Check whether the uncovering of this cell satisfies the won-game condition
