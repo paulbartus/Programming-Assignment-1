@@ -99,7 +99,7 @@ public class MyPanel extends JPanel {
 			if(!minesArray[xBombCoordinate][yBombCoordinate]) {
 				setMines++;
 				minesArray[xBombCoordinate][yBombCoordinate] = true;
-				numberOfMines[xBombCoordinate][yBombCoordinate] = -1; //-1 indicates that there is a bomb in that cell
+				numberOfMines[xBombCoordinate][yBombCoordinate] = -1; //-1 indicates that there is a mine in that cell
 				}
 			}
 		}
