@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.util.Random;
 import javax.swing.JOptionPane;
@@ -22,7 +23,6 @@ public class MyPanel extends JPanel {
 	public Color[][] colorArray = new Color[TOTAL_COLUMNS][TOTAL_ROWS];
 	public Boolean[][] minesArray = new Boolean[TOTAL_COLUMNS][TOTAL_ROWS]; //Array that stores whether a cell contains a mine
 	public int[][] numberOfMines = new int[TOTAL_COLUMNS][TOTAL_ROWS]; //Array that assigns to each cell the number of mines adjacent to it
-	public Boolean[][] revealedCells = new Boolean[TOTAL_COLUMNS][TOTAL_ROWS]; //Array that stores whether a cell has been revealed
 
 	public MyPanel() {   //This is the constructor... this code runs first to initialize
 		if (INNER_CELL_SIZE + (new Random()).nextInt(1) < 1) {	//Use of "random" to prevent unwanted Eclipse warning
@@ -74,6 +74,7 @@ public class MyPanel extends JPanel {
 				g.fillRect(x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 1, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 1, INNER_CELL_SIZE, INNER_CELL_SIZE);
 			}
 		}
+		drawNumbers(g);
 	}
 	//Method that sets mines in 10 random squares
 	public void setMines() {
@@ -81,7 +82,6 @@ public class MyPanel extends JPanel {
 		for (int i = 0; i < TOTAL_COLUMNS; i++) {
 			for (int k = 0; k < TOTAL_ROWS; k++) {
 				minesArray[i][k] = false; 
-				revealedCells[i][k] = false;
 			}
 		}
 		int xBombCoordinate;
@@ -102,15 +102,11 @@ public class MyPanel extends JPanel {
 //				if(minesArray[i][k]) {
 //					colorArray[i][k] = Color.BLACK;
 //					repaint();
-//				}
+//			}
 //			}
 //		}
 	}
-
-
-
-public void nearMines(){			//Sets the number of mines around every cell to that cell 
-		
+	public void nearMines(){ //Sets the number of mines around every cell to that cell 
 		for (int i = 0; i < TOTAL_COLUMNS; i++) {
 			for (int j = 0; j < TOTAL_ROWS; j++) {
 				if (numberOfMines[i][j] != -1){  
@@ -132,47 +128,180 @@ public void nearMines(){			//Sets the number of mines around every cell to that 
 					if (i >= 1 && j <= TOTAL_ROWS-2 && numberOfMines[i-1][j+1] == -1) 
 						numberOfMines[i][j]++;
 				}
-				System.out.println("row" + j + "column" + i + " " + numberOfMines[i][j]);
+//				System.out.println("row" + j + "column" + i + " " + numberOfMines[i][j]); //Note: Use for debugging
 			}
-		}
-		
+		}	
 	}
-
-
-	public void paintAdjacentCells(int i, int j){		//Checks what cells around the clicked cell are empty (no mine) and paints them
+	public void paintAdjacentCells(int i, int j) { //Checks what cells around the clicked cell are empty (no mine) and paints them
 		i = mouseDownGridX;
 		j = mouseDownGridY;
 		if (numberOfMines[i][j] >=0) {
-			if ( j >= 1 && (numberOfMines[i][j-1] == 0)){	
-				colorArray[i][j-1] = Color.GRAY;					 			 
+		if (j >= 1) {
+			if(!minesArray[i][j-1]) {
+			colorArray[i][j-1] = Color.GRAY;
+			traceBlankPath(i, j-1);
+				}
 			}
-			if (j <= TOTAL_ROWS-2 && (numberOfMines[i][j+1] == 0)) {
-				colorArray[i][j+1] = Color.GRAY;
+		if (j <= TOTAL_ROWS - 2) {
+			if(!minesArray[i][j+1]) {
+			colorArray[i][j+1] = Color.GRAY;
+			traceBlankPath(i, j+1);
+				}
 			}
-			if (i >= 1 && (numberOfMines[i-1][j] == 0)) {
-				colorArray[i-1][j] = Color.GRAY;
+		if (i >= 1) {
+			if(!minesArray[i-1][j]) {
+			colorArray[i-1][j] = Color.GRAY;
+			traceBlankPath(i-1, j);
+				}
 			}
-			if (i <=  TOTAL_COLUMNS-2 && (numberOfMines[i+1][j] == 0)) {
-				colorArray[i+1][j] = Color.GRAY;
+		if (i <= TOTAL_COLUMNS - 2) {
+			if(!minesArray[i+1][j]) {
+			colorArray[i+1][j] = Color.GRAY;
+			traceBlankPath(i+1, j);
+				}
 			}
-			if (i >= 1 && j >= 1 && (numberOfMines[i-1][j-1] == 0)) { 
-				colorArray[i-1][j-1] = Color.GRAY;
+		if (i >= 1 && j >= 1) { 
+			if(!minesArray[i-1][j-1]) {
+			colorArray[i-1][j-1] = Color.GRAY;
+			traceBlankPath(i-1, j-1);
+				}
 			}
-			if (i <= TOTAL_COLUMNS-2 && j >= 1 && (numberOfMines[i+1][j-1] == 0)) {
-				colorArray[i+1][j-1] = Color.GRAY;
+		if (i <= TOTAL_COLUMNS - 2 && j >= 1) {
+			if(!minesArray[i+1][j-1]) {
+			colorArray[i+1][j-1] = Color.GRAY;
+			traceBlankPath(i+1, j-1);
+				}
 			}
-			if (i <= TOTAL_COLUMNS-2 && j <= TOTAL_ROWS-2 && (numberOfMines[i+1][j+1] == 0)) {
-				colorArray[i+1][j+1] = Color.GRAY;
+		if (i <= TOTAL_COLUMNS - 2 && j <= TOTAL_ROWS - 2) {
+			if(!minesArray[i+1][j+1]) {
+			colorArray[i+1][j+1] = Color.GRAY;
+			traceBlankPath(i+1, j+1);
+				}
 			}
-			if (i >= 1 && j <= TOTAL_ROWS-2 && (numberOfMines[i-1][j+1] == 0)) {
-				colorArray[i-1][j+1] = Color.GRAY;
+		if (i >= 1 && j <= TOTAL_ROWS - 2) {
+			if(!minesArray[i-1][j+1]) {
+			colorArray[i-1][j+1] = Color.GRAY;
+			traceBlankPath(i-1, j+1);
 			}
 		}
-
+		} 
 	}
-
-
-
+		public void traceBlankPath(int xCoordinate, int yCoordinate) {
+			for(int m = 1; xCoordinate + m < TOTAL_COLUMNS; m++) {
+				if(colorArray[xCoordinate + m][yCoordinate] == Color.GRAY) {
+					break;
+				}
+				if(numberOfMines[xCoordinate + m][yCoordinate] == 0) { //Moving to the right
+					colorArray[xCoordinate + m][yCoordinate] = Color.GRAY;
+					} else {
+						if(m > 1 && numberOfMines[xCoordinate + m][yCoordinate]>0) {
+							colorArray[xCoordinate + m][yCoordinate] = Color.GRAY; 
+							}
+						break;
+						}
+					}
+			for(int m = 1; xCoordinate - m >= 0; m++) {
+				if(colorArray[xCoordinate - m][yCoordinate] == Color.GRAY) {
+					break;
+				}
+				if(numberOfMines[xCoordinate - m][yCoordinate] == 0) { //Moving to the left
+					colorArray[xCoordinate - m][yCoordinate] = Color.GRAY;
+					} else {
+						if(m > 1 && numberOfMines[xCoordinate - m][yCoordinate]>0) {
+							colorArray[xCoordinate - m][yCoordinate] = Color.GRAY; 
+							}
+						break;
+						}
+					}
+			for(int k = 1; yCoordinate + k < TOTAL_COLUMNS; k++) {
+				if(colorArray[xCoordinate][yCoordinate + k] == Color.GRAY) {
+					break;
+				}
+				if(numberOfMines[xCoordinate][yCoordinate + k] == 0) { //Moving down
+					colorArray[xCoordinate][yCoordinate + k] = Color.GRAY;
+					} else {
+						if(k > 1 && numberOfMines[xCoordinate][yCoordinate + k]>0) {
+							colorArray[xCoordinate][yCoordinate + k] = Color.GRAY; 
+							}
+						break;
+						}
+					}
+			for(int k = 1; yCoordinate - k >= 0; k++) {
+				if(colorArray[xCoordinate][yCoordinate - k] == Color.GRAY) {
+					break;
+				}
+				if(numberOfMines[xCoordinate][yCoordinate - k] == 0) { //Moving up
+					colorArray[xCoordinate][yCoordinate - k] = Color.GRAY;
+					} else {
+						if(k > 1 && numberOfMines[xCoordinate][yCoordinate - k]>0) {
+							colorArray[xCoordinate][yCoordinate - k] = Color.GRAY; //THIS SHOULD BE: PAINT NUMBER
+							}
+						break;
+					}
+				}
+			
+//DIAGONAL
+			for(int k = 1; yCoordinate - k >= 0; k++) {
+				if (xCoordinate - k >= 0){
+				if(colorArray[xCoordinate-k][yCoordinate - k] == Color.GRAY) {
+					break;
+				}
+				if(numberOfMines[xCoordinate-k][yCoordinate - k] == 0) { 
+					colorArray[xCoordinate-k][yCoordinate - k] = Color.GRAY;
+					} else {
+						if(k > 1 && numberOfMines[xCoordinate-k][yCoordinate - k]>0) {
+							colorArray[xCoordinate-k][yCoordinate - k] = Color.GRAY; //THIS SHOULD BE: PAINT NUMBER
+							}
+						break;
+					}
+				}
+			}
+			for(int k = 1; yCoordinate - k >= 0; k++) {
+				if (xCoordinate + k < TOTAL_COLUMNS){
+				if(colorArray[xCoordinate+k][yCoordinate - k] == Color.GRAY) {
+					break;
+				}
+				if(numberOfMines[xCoordinate+k][yCoordinate - k] == 0) { 
+					colorArray[xCoordinate+k][yCoordinate - k] = Color.GRAY;
+					} else {
+						if(k > 1 && numberOfMines[xCoordinate+k][yCoordinate - k]>0) {
+							colorArray[xCoordinate+k][yCoordinate - k] = Color.GRAY; //THIS SHOULD BE: PAINT NUMBER
+							}
+						break;
+					}
+				}
+			}
+			for(int k = 1; yCoordinate + k < TOTAL_ROWS; k++) {
+				if(xCoordinate + k < TOTAL_COLUMNS){
+				if(colorArray[xCoordinate+k][yCoordinate + k] == Color.GRAY) {
+					break;
+				}
+				if(numberOfMines[xCoordinate+k][yCoordinate + k] == 0) { 
+					colorArray[xCoordinate+k][yCoordinate + k] = Color.GRAY;
+					} else {
+						if(k > 1 && numberOfMines[xCoordinate+k][yCoordinate + k]>0) {
+							colorArray[xCoordinate+k][yCoordinate + k] = Color.GRAY; //THIS SHOULD BE: PAINT NUMBER
+							}
+						break;
+					}
+				}
+			}
+			for(int k = 1; yCoordinate + k < TOTAL_COLUMNS; k++) {
+				if(xCoordinate - k >= 0){
+				if(colorArray[xCoordinate-k][yCoordinate + k] == Color.GRAY) {
+					break;
+				}
+				if(numberOfMines[xCoordinate-k][yCoordinate + k] == 0) { 
+					colorArray[xCoordinate-k][yCoordinate + k] = Color.GRAY;
+					} else {
+						if(k > 1 && numberOfMines[xCoordinate-k][yCoordinate + k] > 0) {
+							colorArray[xCoordinate-k][yCoordinate + k] = Color.GRAY; //THIS SHOULD BE: PAINT NUMBER
+							}
+						break;
+					}
+				}
+			}
+			}
 	//Method that's called when the player loses the game
 	public void lostGame() {
 		for (int i = 0; i < TOTAL_COLUMNS; i++) {
@@ -185,7 +314,6 @@ public void nearMines(){			//Sets the number of mines around every cell to that 
 		}
 		JOptionPane.showMessageDialog(null, "Hit a mine; lost the game!");
 	}
-
 	public void wonGameCondition() {
 		int m = 0;
 		for (int i = 0; i < TOTAL_COLUMNS; i++) {
@@ -193,18 +321,38 @@ public void nearMines(){			//Sets the number of mines around every cell to that 
 				if(!minesArray[i][j] && colorArray[i][j] == Color.GRAY) {
 					m++;
 				}
-//					if(!revealedCells[i][j]) {
-//						break;
-//					}
-//				else {
-//						m++;
-//					}
-//				}
-//			}
-		}
+			}
 		}
 		if(m == ((TOTAL_ROWS)*(TOTAL_COLUMNS)) - TOTAL_MINES) {
 			JOptionPane.showMessageDialog(null, "Won the game!");
+		}
+	}
+	
+	public void drawNumbers(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		for (int i=0; i < TOTAL_COLUMNS; i++){
+			for (int j=0; j < TOTAL_ROWS; j++){
+				if ((numberOfMines[i][j] == 1) && (colorArray[i][j] == Color.GRAY)){
+					g2.setColor(Color.BLUE);
+					g2.drawString(numberOfMines[i][j]+"", i*INNER_CELL_SIZE+40, j*INNER_CELL_SIZE+50);
+				}
+				if ((numberOfMines[i][j] == 2) && (colorArray[i][j] == Color.GRAY)){
+					g2.setColor(Color.GREEN);
+					g2.drawString(numberOfMines[i][j]+"", i*INNER_CELL_SIZE+40, j*INNER_CELL_SIZE+50);
+				}
+				if ((numberOfMines[i][j] == 3) && (colorArray[i][j] == Color.GRAY)){
+					g2.setColor(Color.YELLOW);
+					g2.drawString(numberOfMines[i][j]+"", i*INNER_CELL_SIZE+40, j*INNER_CELL_SIZE+50);
+				}
+				if ((numberOfMines[i][j] == 4) && (colorArray[i][j] == Color.GRAY)){
+					g2.setColor(Color.MAGENTA);
+					g2.drawString(numberOfMines[i][j]+"", i*INNER_CELL_SIZE+40, j*INNER_CELL_SIZE+50);
+				}
+				if ((numberOfMines[i][j] > 4) && (colorArray[i][j] == Color.GRAY)){
+					g2.setColor(Color.BLACK);
+					g2.drawString(numberOfMines[i][j]+"", i*INNER_CELL_SIZE+40, j*INNER_CELL_SIZE+50);
+				}
+			}
 		}
 	}
 
@@ -252,9 +400,4 @@ public void nearMines(){			//Sets the number of mines around every cell to that 
 		}
 		return y;
 	}
-
-
-
-
-
 }

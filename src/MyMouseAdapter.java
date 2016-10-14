@@ -98,18 +98,19 @@ public class MyMouseAdapter extends MouseAdapter {
 						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.RED)) {
 							break; //Don't uncover square if it's flagged
 						}
+						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.GRAY)) {
+							break; //Do nothing if cell is already revealed
+						}
 						if(myPanel.minesArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]) { //Hit mine
 							myPanel.lostGame();
+							if (myPanel.mouseDownGridX == gridX|| myPanel.mouseDownGridY == gridY)
+								myFrame.dispose();
 							break;
-						}
-						
+						}	
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
-						myPanel.revealedCells[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = true;
 						myPanel.paintAdjacentCells(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
 						myPanel.repaint();
 						myPanel.wonGameCondition(); //Check whether the uncovering of this cell satisfies the won-game condition
-
-
 					}
 				}
 			}
@@ -150,6 +151,9 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Player flagged square
 						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.GRAY)) {
 							break; //Can't flag uncovered square
+						}
+						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.BLACK)) {
+							break; //Can't flag mines
 						}
 						//Remove existing flag
 						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.RED)) {
