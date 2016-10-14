@@ -94,6 +94,10 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Released the mouse button on a different cell where it was pressed
 						//Do nothing
 					} else {
+						if (!myPanel.gameStart) {
+							myPanel.firstClick(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
+							myPanel.setMines();
+						}
 						//On the grid; either uncovered empty square or hit mine
 						if(myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY].equals(Color.RED)) {
 							break; //Don't uncover square if it's flagged
@@ -104,7 +108,7 @@ public class MyMouseAdapter extends MouseAdapter {
 						if(myPanel.minesArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]) { //Hit mine
 							myPanel.lostGame();
 							if (myPanel.mouseDownGridX == gridX|| myPanel.mouseDownGridY == gridY)
-								myFrame.dispose();
+								myFrame.dispose(); //Close frame when user clicks a mine
 							break;
 						}	
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
