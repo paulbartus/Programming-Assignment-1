@@ -103,6 +103,8 @@ public class MyMouseAdapter extends MouseAdapter {
 						}
 						if(myPanel.minesArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY]) { //Hit mine
 							myPanel.lostGame();
+							if (myPanel.mouseDownGridX == gridX|| myPanel.mouseDownGridY == gridY)
+								myFrame.dispose();
 							break;
 						}	
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
